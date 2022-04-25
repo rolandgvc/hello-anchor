@@ -1,7 +1,7 @@
 [features]
 seeds = false
 [programs.localnet]
-hello_anchor = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+hello_anchor = "GzScbxmzfKMTV7NdfNDF5f4C8EtRtzR3aB8VzgM5g24s"
 
 [registry]
 url = "https://anchor.projectserum.com"
