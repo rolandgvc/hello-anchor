@@ -6,7 +6,7 @@ import styles from '../styles/Home.module.css';
 
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3, BN } from '@project-serum/anchor';
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 
 import idl from '../idl/hello_anchor.json'
 
@@ -14,6 +14,7 @@ const Home: NextPage = () => {
 
     const network = "http://127.0.0.1:8899";
     const wallet = useAnchorWallet();
+    const newAccount = web3.Keypair.generate();
 
     async function getProvider() {
         if (!wallet) {
@@ -26,13 +27,12 @@ const Home: NextPage = () => {
         return provider;
     }
 
-
     async function createCounter() {
         const provider = await getProvider()
-        const newAccount = web3.Keypair.generate();
         if (!provider) {
             throw ("Provider is null.")
         }
+
         // create the program interface combining the idl, program ID, and provider
         // idl casting is a JSON parsing bug workaround
         const program = new Program(idl as any, idl.metadata.address, provider);
@@ -49,6 +49,64 @@ const Home: NextPage = () => {
             console.log("Transaction error: ", err);
         }
     }
+
+    async function updateCounter() {
+        const provider = await getProvider()
+        if (!provider) {
+            throw ("Provider is null.")
+        }
+
+        const program = new Program(idl as any, idl.metadata.address, provider);
+        try {
+            await program.methods.increment().accounts({
+                counterAccount: newAccount.publicKey,
+            }).rpc();
+
+            const account = await program.account.counterAccount.fetch(newAccount.publicKey);
+            console.log('count: ', account.count);
+        } catch (err) {
+            console.log("Transaction error: ", err);
+        }
+    }
+
+    async function incrementCounter() {
+        const provider = await getProvider()
+        if (!provider) {
+            throw ("Provider is null.")
+        }
+
+        const program = new Program(idl as any, idl.metadata.address, provider);
+        try {
+            await program.methods.increment().accounts({
+                counterAccount: newAccount.publicKey,
+            }).rpc();
+
+            const account = await program.account.counterAccount.fetch(newAccount.publicKey);
+            console.log('count: ', account.count);
+        } catch (err) {
+            console.log("Transaction error: ", err);
+        }
+    }
+
+    async function decrementCounter() {
+        const provider = await getProvider()
+        if (!provider) {
+            throw ("Provider is null.")
+        }
+
+        const program = new Program(idl as any, idl.metadata.address, provider);
+        try {
+            await program.methods.increment().accounts({
+                counterAccount: newAccount.publicKey,
+            }).rpc();
+
+            const account = await program.account.counterAccount.fetch(newAccount.publicKey);
+            console.log('count: ', account.count);
+        } catch (err) {
+            console.log("Transaction error: ", err);
+        }
+    }
+
 
     return (
         <div className={styles.container}>
@@ -78,16 +136,16 @@ const Home: NextPage = () => {
                         <p>Create a new counter account.</p>
                     </div>
 
-                    <div className={styles.card}>
+                    <div className={styles.card} onClick={updateCounter}>
                         <h2>Update &rarr;</h2>
                         <p>Update current counter account.</p>
                     </div>
 
-                    <div className={styles.card}>
+                    <div className={styles.card} onClick={decrementCounter}>
                         <h2>➖ Decrement</h2>
                     </div>
 
-                    <a className={styles.card}>
+                    <a className={styles.card} onClick={incrementCounter}>
                         <h2>Increment ➕</h2>
                     </a>
                 </div>
